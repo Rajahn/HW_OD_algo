@@ -1,6 +1,6 @@
 import org.omg.PortableInterceptor.INACTIVE;
 
-import java.util.Scanner;
+import java.util.*;
 
 public class 找数字 {
     public static void main(String[] args) {
@@ -8,32 +8,50 @@ public class 找数字 {
         int row= Integer.valueOf(sc.nextLine());
         int col=Integer.valueOf(sc.nextLine());
         int[][]matrix=new int[row][col];
+        Map<Integer, List<int[]>>map=new HashMap<>(); //所有值为val的元素，坐标点
         for(int i=0;i<row;i++){
             String[]strs=sc.nextLine().split(" ");
             for(int j=0;j<col;j++){
                 matrix[i][j]=Integer.valueOf(strs[j]);
+                int[]pos=new int[]{i,j};
+                List<int[]> temp;
+                if(map.containsKey(matrix[i][j])){
+                    temp=map.get(matrix[i][j]);
+                }else{
+                    temp=new ArrayList<>();
+                }
+                temp.add(pos);
+                map.put(matrix[i][j],temp);
             }
         }
-        int[][]res=new int[row][col];
+
+       List<List<Integer>>res=new ArrayList<>();
+
         for(int i=0;i<row;i++){
+            List<Integer> temp=new ArrayList<>();
             for(int j=0;j<col;j++){
-                int dis=find(matrix,i,j,)
+               int num=matrix[i][j];
+               List<int[]> pos_list=map.get(num);
+               if(pos_list.size()==1){
+                   temp.add(-1);
+                   continue;
+               }
+               int min_dis=Integer.MAX_VALUE;
+               for(int k=0;k<pos_list.size();k++){
+                   int[]pos=pos_list.get(k);
+                   int dis=Math.abs(pos[0]-i)+Math.abs(pos[1]-j);
+                   if(dis==0)continue;
+                   min_dis=Math.min(min_dis,dis);
+               }
+               temp.add(min_dis);
             }
+            res.add(temp);
         }
+        System.out.println(res);
 
 
 
     }
 
-    public static  int find(int[][]matrix,int i,int j,int x,int y){
-       if(i<0||i>matrix.length-1||j<0||j>matrix.length-1)return Integer.MAX_VALUE;
-       if(matrix[i][j]!=matrix[x][y])return Integer.MAX_VALUE;
-       int curDis=Math.abs(x-i)+Math.abs(y-j);
-       int left=find(matrix,i-1,j,x,y);
-       int right=find(matrix,i,j+1,x,y);
-       int up=find(matrix,i+1,j+1,x,y);
-       int down=find(matrix,i-1,j-1,x,y);
-       int temp=Math.min(Math.min(left,right),Math.min(up,down));
-       return Math.min(temp,curDis);
-    }
+
 }
